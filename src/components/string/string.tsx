@@ -6,23 +6,21 @@ import { Circle } from "../ui/circle/circle";
 import stylesString from "./string.module.css";
 import { ElementStates } from "../../types/element-states";
 import { nanoid } from "nanoid";
+import { TArrString } from "../../types/elements";
 
-type TArrString = {
-  element: string | undefined | null;
-  color: ElementStates | undefined;
-  key: string | number | null;
-};
 export const StringComponent: React.FC = () => {
   const [arrString, setArrString] = useState<string[]>([]);
   const [reverseString, setReverseString] = useState<Array<TArrString>>([]);
   const [isLoader, setIsLoader] = useState<boolean>(false);
 
+// разбиение стороки на массив
   const onClick = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const string = e.target.value;
     const arrayOfStrings = string.split("");
     setArrString(arrayOfStrings);
     addArrString(arrayOfStrings);
   };
+// Добавление новых элементов со своим цветом и ключем из массива
   const addArrString = (arr: string[]): void => {
     for (let i = 0; i < arr.length; i++) {
       setReverseString([
@@ -35,30 +33,50 @@ export const StringComponent: React.FC = () => {
       ]);
     }
   };
-  const promise = () => {
+// Остановка
+  const stop = () => {
     return new Promise((resolve) => {
       setTimeout(resolve, 1000);
     });
   };
-
+// Изменение цвета
+  const changeColor = (type: string, startIndex: number, endIndex: number) => {
+    if (type === "start") {
+      reverseString[startIndex].color = reverseString[endIndex].color =
+        ElementStates.Changing;
+    }
+    if (type === "finish") {
+      reverseString[startIndex].color = reverseString[endIndex].color =
+        ElementStates.Modified;
+    }
+  };
+// Изменение положения элементов
+  const swap = (
+    arr: Array<TArrString>,
+    firstIndex: number,
+    secondIndex: number
+  ): void => {
+    const temp = arr[firstIndex].element;
+    arr[firstIndex].element = arr[secondIndex].element;
+    arr[secondIndex].element = temp;
+  };
+// Изменение положения элементов с анимацией
   const reverse = async () => {
     const mid = Math.round(arrString.length / 2);
     for (let i: number = 0; i < mid; i++) {
       const endIndexElement = arrString.length - i - 1;
-      const temp = reverseString[i].element;
-      reverseString[i].color = ElementStates.Changing;
-      reverseString[endIndexElement].color = ElementStates.Changing;
-      reverseString[i].element = reverseString[endIndexElement].element;
-      reverseString[endIndexElement].element = temp;
+      changeColor("start", i, endIndexElement);
       setReverseString([...reverseString]);
-      await promise(); // остановка
-      reverseString[i].color = ElementStates.Modified;
-      reverseString[endIndexElement].color = ElementStates.Modified;
+      await stop(); // остановка
+      swap(reverseString, i, endIndexElement);
+      setReverseString([...reverseString]);
+      await stop(); // остановка
+      changeColor("finish", i, endIndexElement);
       setReverseString([...reverseString]);
     }
   };
 
-  const onFormSubmit = async (e: React.FormEvent<HTMLButtonElement>) => {
+  const onFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoader(true);
     await reverse();
@@ -68,12 +86,11 @@ export const StringComponent: React.FC = () => {
   return (
     <SolutionLayout title="Строка">
       <main className={stylesString.main}>
-        <form className={stylesString.form}>
+        <form className={stylesString.form} onSubmit={onFormSubmit}>
           <Input maxLength={11} isLimitText onChange={onClick} />
           <Button
             text="Развернуть"
             isLoader={isLoader}
-            onClick={onFormSubmit}
           />
         </form>
         <ul className={stylesString.list}>
