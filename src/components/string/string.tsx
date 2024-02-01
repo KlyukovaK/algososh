@@ -7,6 +7,8 @@ import stylesString from "./string.module.css";
 import { ElementStates } from "../../types/element-states";
 import { nanoid } from "nanoid";
 import { TArrString } from "../../types/elements";
+import { swap } from "../../utils/swap";
+import { stop } from "../../utils/stop";
 
 export const StringComponent: React.FC = () => {
   const [arrString, setArrString] = useState<string[]>([]);
@@ -33,12 +35,7 @@ export const StringComponent: React.FC = () => {
       ]);
     }
   };
-// Остановка
-  const stop = () => {
-    return new Promise((resolve) => {
-      setTimeout(resolve, 1000);
-    });
-  };
+
 // Изменение цвета
   const changeColor = (type: string, startIndex: number, endIndex: number) => {
     if (type === "start") {
@@ -50,16 +47,7 @@ export const StringComponent: React.FC = () => {
         ElementStates.Modified;
     }
   };
-// Изменение положения элементов
-  const swap = (
-    arr: Array<TArrString>,
-    firstIndex: number,
-    secondIndex: number
-  ): void => {
-    const temp = arr[firstIndex].element;
-    arr[firstIndex].element = arr[secondIndex].element;
-    arr[secondIndex].element = temp;
-  };
+
 // Изменение положения элементов с анимацией
   const reverse = async () => {
     const mid = Math.round(arrString.length / 2);
@@ -67,10 +55,10 @@ export const StringComponent: React.FC = () => {
       const endIndexElement = arrString.length - i - 1;
       changeColor("start", i, endIndexElement);
       setReverseString([...reverseString]);
-      await stop(); // остановка
+      await stop(1000); // остановка
       swap(reverseString, i, endIndexElement);
       setReverseString([...reverseString]);
-      await stop(); // остановка
+      await stop(1000); // остановка
       changeColor("finish", i, endIndexElement);
       setReverseString([...reverseString]);
     }

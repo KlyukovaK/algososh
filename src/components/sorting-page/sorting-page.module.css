@@ -1,0 +1,40 @@
+.main {
+  max-width: 924px;
+  width: 100%;
+  display: flex;
+  margin: 0 auto;
+  flex-direction: column;
+  align-content: center;
+  gap: 48px;
+}
+.form {
+  display: flex;
+  max-width: 924px;
+  margin: 0;
+}
+.radioFieldset{
+  border: 0;
+  display: flex;
+  gap: 40px;
+  padding: 0;
+  margin: 0;
+  align-items: center;
+}
+.buttons {
+  display: flex;
+  gap: 12px;
+  margin: 0 52px 0 80px;
+}
+.list {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  text-decoration: none;
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  height: 368px;
+}
+.column {
+  text-decoration: none;
+}
