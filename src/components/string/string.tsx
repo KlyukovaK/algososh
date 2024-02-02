@@ -1,70 +1,56 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import { Input } from "../ui/input/input";
 import { Button } from "../ui/button/button";
 import { Circle } from "../ui/circle/circle";
 import stylesString from "./string.module.css";
 import { ElementStates } from "../../types/element-states";
-import { nanoid } from "nanoid";
-import { TArrString } from "../../types/elements";
+import { TArr } from "../../types/elements";
 import { swap } from "../../utils/swap";
 import { stop } from "../../utils/stop";
+import { useForm } from "../../utils/useForm";
+import { addArr } from "../../utils/addArr";
 
 export const StringComponent: React.FC = () => {
-  const [arrString, setArrString] = useState<string[]>([]);
-  const [reverseString, setReverseString] = useState<Array<TArrString>>([]);
+  const [string, setString] = useState<Array<TArr>>([]);
   const [isLoader, setIsLoader] = useState<boolean>(false);
+  const { values, handleChange } = useForm({ input: "" });
 
-// разбиение стороки на массив
-  const onClick = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const string = e.target.value;
-    const arrayOfStrings = string.split("");
-    setArrString(arrayOfStrings);
-    addArrString(arrayOfStrings);
-  };
-// Добавление новых элементов со своим цветом и ключем из массива
-  const addArrString = (arr: string[]): void => {
-    for (let i = 0; i < arr.length; i++) {
-      setReverseString([
-        ...reverseString,
-        {
-          element: arr[i],
-          color: ElementStates.Default,
-          key: nanoid(5),
-        },
-      ]);
-    }
-  };
+  useEffect(() => {
+    const arrayOfStrings = values.input.split("");
+    const newArr = addArr(arrayOfStrings);
+    setString(newArr);
+  }, [values.input]);
 
-// Изменение цвета
+  // Изменение цвета
   const changeColor = (type: string, startIndex: number, endIndex: number) => {
     if (type === "start") {
-      reverseString[startIndex].color = reverseString[endIndex].color =
+      string[startIndex].color = string[endIndex].color =
         ElementStates.Changing;
     }
     if (type === "finish") {
-      reverseString[startIndex].color = reverseString[endIndex].color =
+      string[startIndex].color = string[endIndex].color =
         ElementStates.Modified;
     }
   };
 
-// Изменение положения элементов с анимацией
+  // Изменение положения элементов с анимацией
   const reverse = async () => {
-    const mid = Math.round(arrString.length / 2);
+    const mid = Math.round(string.length / 2);
     for (let i: number = 0; i < mid; i++) {
-      const endIndexElement = arrString.length - i - 1;
+      const endIndexElement = string.length - i - 1;
       changeColor("start", i, endIndexElement);
-      setReverseString([...reverseString]);
+      setString([...string]);
       await stop(1000); // остановка
-      swap(reverseString, i, endIndexElement);
-      setReverseString([...reverseString]);
+      swap(string, i, endIndexElement);
+      setString([...string]);
       await stop(1000); // остановка
       changeColor("finish", i, endIndexElement);
-      setReverseString([...reverseString]);
+      setString([...string]);
     }
   };
 
-  const onFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const reverseString = async (e: React.FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setIsLoader(true);
     await reverse();
@@ -74,15 +60,23 @@ export const StringComponent: React.FC = () => {
   return (
     <SolutionLayout title="Строка">
       <main className={stylesString.main}>
-        <form className={stylesString.form} onSubmit={onFormSubmit}>
-          <Input maxLength={11} isLimitText onChange={onClick} />
+        <form className={stylesString.form}>
+          <Input
+            name="input"
+            maxLength={11}
+            isLimitText
+            onChange={handleChange}
+            value={values.input}
+          />
           <Button
             text="Развернуть"
             isLoader={isLoader}
+            onClick={reverseString}
+            disabled={!values.input ? true : false}
           />
         </form>
         <ul className={stylesString.list}>
-          {reverseString.map((item) => (
+          {string.map((item) => (
             <li className={stylesString.circle} key={item.key}>
               <Circle letter={item.element} state={item.color} />
             </li>

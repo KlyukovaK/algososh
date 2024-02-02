@@ -5,41 +5,37 @@ import { Button } from "../ui/button/button";
 import { Circle } from "../ui/circle/circle";
 import styleStack from "./stack-page.module.css";
 import { Stack } from "./stack-class";
-import { TArrString } from "../../types/elements";
+import { TArr } from "../../types/elements";
 import { ElementStates } from "../../types/element-states";
 import { nanoid } from "nanoid";
 import { stop } from "../../utils/stop";
+import { useForm } from "../../utils/useForm";
 
 export const StackPage: React.FC = () => {
-  const newStack = new Stack<TArrString>();
-  const [value, setValue] = useState<string>();
-  const [stack, setStack] = useState<Stack<TArrString>>(newStack);
-  const [reverseString, setReverseString] = useState<Array<TArrString>>([]);
-
-  const onClick = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const val = e.target.value;
-    setValue(val);
-  };
+  const newStack = new Stack<TArr>();
+  const [stack] = useState<Stack<TArr>>(newStack);
+  const [elements, setElements] = useState<Array<TArr>>([]);
+  const { values, handleChange, setValues } = useForm({ input: "" });
 
   const addState = async () => {
-    const newElement: TArrString = {
-      element: value,
+    const newElement: TArr = {
+      element: values.input,
       key: nanoid(5),
       index: stack.getSize(),
       color: ElementStates.Changing,
     };
     stack.push(newElement);
-    setReverseString([...stack.getElements()]);
-    await stop(1000);
-    const newElementColore: TArrString = {
-      element: value,
+    setElements([...stack.getElements()]);
+    await stop(500);
+    const newElementColore: TArr = {
+      element: values.input,
       key: nanoid(5),
       index: stack.getSize() - 1,
       color: ElementStates.Default,
     };
     stack.changeColor(newElementColore);
-    setReverseString([...stack.getElements()]);
-    setValue("");
+    setElements([...stack.getElements()]);
+    setValues({ input: "" });
   };
 
   const deleteElement = async () => {
@@ -47,16 +43,16 @@ export const StackPage: React.FC = () => {
     if (lastElement) {
       lastElement.color = ElementStates.Changing;
       stack.changeColor(lastElement);
-      setReverseString([...stack.getElements()]);
+      setElements([...stack.getElements()]);
     }
-    await stop(1000);
+    await stop(500);
     stack.pop();
-    setReverseString([...stack.getElements()]);
+    setElements([...stack.getElements()]);
   };
 
   const clean = (): void => {
     stack.clearElements();
-    setReverseString([...stack.getElements()]);
+    setElements([...stack.getElements()]);
   };
 
   return (
@@ -66,18 +62,31 @@ export const StackPage: React.FC = () => {
           <div className={styleStack.addStack}>
             <Input
               type="text"
+              name="input"
               isLimitText
               maxLength={4}
-              onChange={onClick}
-              value={value}
+              onChange={handleChange}
+              value={values.input}
             />
-            <Button text="Добавить" onClick={addState} />
-            <Button text="Удалить" onClick={deleteElement} />
+            <Button
+              text="Добавить"
+              onClick={addState}
+              disabled={!values.input ? true : false}
+            />
+            <Button
+              text="Удалить"
+              onClick={deleteElement}
+              disabled={stack.getSize()===0 ? true : false}
+            />
           </div>
-          <Button text="Очистить" onClick={clean} />
+          <Button
+            text="Очистить"
+            onClick={clean}
+            disabled={stack.getSize()===0 ? true : false}
+          />
         </form>
         <ul className={styleStack.list}>
-          {reverseString.map((item) => (
+          {elements.map((item) => (
             <li className={styleStack.circle} key={item.key}>
               <Circle
                 letter={item.element}

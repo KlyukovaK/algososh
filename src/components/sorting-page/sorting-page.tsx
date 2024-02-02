@@ -7,20 +7,27 @@ import { Direction } from "../../types/direction";
 import { Column } from "../ui/column/column";
 import { ElementStates } from "../../types/element-states";
 import { swap } from "../../utils/swap";
-import { TArr } from "../../types/elements";
-import { nanoid } from "nanoid";
+import { TArrSort, TButton } from "../../types/elements";
 import { stop } from "../../utils/stop";
+import { useForm } from "../../utils/useForm";
+import { addArr } from "../../utils/addArr";
 
 export const SortingPage: React.FC = () => {
   const [arr, setArr] = useState<number[]>([]);
-  const [newArr, setNewArr] = useState<Array<TArr>>([]);
-  const [isLoader, setIsLoader] = useState<boolean>(false);
+  const [newArr, setNewArr] = useState<Array<TArrSort>>([]);
+  const [isLoader, setIsLoader] = useState<TButton>({
+    increasing: false,
+    descending: false,
+    addArr: false,
+  });
   const [isIncrease, setIsIncrease] = useState<boolean>(false);
-  const [value, setValue] = useState<string>("1");
+  const [isDisabled, setIsDisabled] = useState<TButton>({
+    increasing: false,
+    descending: false,
+    addArr: false,
+  });
+  const { values, handleChange } = useForm({ radioButton: "1" });
 
-  const chengeValue = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    setValue(e.target.value);
-  };
   // создание исходного массива
   const randomArr = () => {
     const length = Math.random() * (17 - 3) + 3;
@@ -31,36 +38,26 @@ export const SortingPage: React.FC = () => {
     }
     setArr(numbers);
   };
-  // Добавление новых элементов со своим цветом и ключем из массива
-  const addArr = (arr: number[]): void => {
-    const newArr = [];
-    for (let i = 0; i < arr.length; i++) {
-      newArr.push({
-        element: arr[i],
-        color: ElementStates.Default,
-        key: nanoid(5),
-      });
-    }
-    setNewArr(newArr);
-  };
 
   useEffect(() => {
     if (arr) {
-      addArr(arr);
+      const newArr = addArr(arr);
+      setNewArr(newArr);
     }
   }, [arr]);
+
   //сортировка выбором
-  const selectionSort = async (arr: Array<TArr>) => {
+  const selectionSort = async (arr: Array<TArrSort>) => {
     const { length } = arr;
     for (let i = 0; i < length; i++) {
       let maxInd = i;
       arr[maxInd].color = ElementStates.Changing;
-      await stop(1000);
+      await stop(500);
       setNewArr([...arr]);
       for (let j = i + 1; j < length; j++) {
         arr[j].color = ElementStates.Changing;
         setNewArr([...arr]);
-        await stop(1000);
+        await stop(500);
         const comparison = isIncrease
           ? arr[maxInd].element < arr[j].element
           : arr[maxInd].element > arr[j].element;
@@ -78,13 +75,13 @@ export const SortingPage: React.FC = () => {
     }
   };
   // сортировка пузырьком
-  const bubbleSort = async (arr: Array<TArr>) => {
+  const bubbleSort = async (arr: Array<TArrSort>) => {
     const { length } = arr;
     for (let i = 0; i < length; i++) {
       for (let j = 0; j < length - i - 1; j++) {
         arr[j].color = arr[j + 1].color = ElementStates.Changing;
         setNewArr([...arr]);
-        await stop(1000);
+        await stop(500);
         const comparison = isIncrease
           ? arr[j].element < arr[j + 1].element
           : arr[j].element > arr[j + 1].element;
@@ -93,7 +90,7 @@ export const SortingPage: React.FC = () => {
         }
         arr[j + 1].color = ElementStates.Modified;
         arr[j].color = ElementStates.Default;
-        await stop(1000);
+        await stop(500);
       }
     }
     arr[0].color = ElementStates.Modified;
@@ -101,26 +98,33 @@ export const SortingPage: React.FC = () => {
   };
   // общая сортировка
   const sort = async () => {
-    value === "1" ? await selectionSort(newArr) : await bubbleSort(newArr);
+    values.radioButton === "1"
+      ? await selectionSort(newArr)
+      : await bubbleSort(newArr);
   };
 
   const onFormIncreaseSubmit = async (
     e: React.FormEvent<HTMLButtonElement>
   ) => {
     e.preventDefault();
-    setIsIncrease(true);
-    setIsLoader(true);
+    setIsIncrease(false);
+    setIsLoader({ increasing: true, descending: false, addArr: false });
+    setIsDisabled({ increasing: false, descending: true, addArr: true });
     await sort();
-    setIsLoader(false);
+    setIsDisabled({ increasing: false, descending: false, addArr: false });
+    setIsLoader({ increasing: false, descending: false, addArr: false });
   };
+
   const onFormDecreaseSubmit = async (
     e: React.FormEvent<HTMLButtonElement>
   ) => {
     e.preventDefault();
-    setIsIncrease(false);
-    setIsLoader(true);
+    setIsIncrease(true);
+    setIsDisabled({ increasing: true, descending: false, addArr: true });
+    setIsLoader({ increasing: false, descending: true, addArr: false });
     await sort();
-    setIsLoader(false);
+    setIsDisabled({ increasing: false, descending: false, addArr: false });
+    setIsLoader({ increasing: false, descending: false, addArr: false });
   };
   return (
     <SolutionLayout title="Сортировка массива">
@@ -130,44 +134,49 @@ export const SortingPage: React.FC = () => {
             <RadioInput
               label="Выбор"
               extraClass="bubble"
+              name="radioButton"
               value="1"
-              checked={value === "1" ? true : false}
-              onChange={chengeValue}
+              checked={values.radioButton === "1" ? true : false}
+              onChange={handleChange}
             />
             <RadioInput
               label="Пузырёк"
               extraClass="bubble"
+              name="radioButton"
               value="2"
-              checked={value === "2" ? true : false}
-              onChange={chengeValue}
+              checked={values.radioButton === "2" ? true : false}
+              onChange={handleChange}
             />
           </fieldset>
           <div className={stylesSort.buttons}>
             <Button
               sorting={Direction.Ascending}
               text="По возрастанию"
-              isLoader={isLoader}
+              isLoader={isLoader.increasing}
               onClick={onFormIncreaseSubmit}
+              disabled={isDisabled.increasing}
             />
             <Button
               sorting={Direction.Descending}
               text="По убыванию"
-              isLoader={isLoader}
+              isLoader={isLoader.descending}
               onClick={onFormDecreaseSubmit}
+              disabled={isDisabled.descending}
             />
           </div>
           <Button
             text="Новый массив"
-            isLoader={isLoader}
+            isLoader={isLoader.addArr}
             onClick={() => {
               randomArr();
             }}
+            disabled={isDisabled.addArr}
           />
         </form>
         <ul className={stylesSort.list}>
           {newArr.map((item) => (
             <li className={stylesSort.column} key={item.key}>
-              <Column index={item.element} state={item.color} />
+              <Column index={Number(item.element)} state={item.color} />
             </li>
           ))}
         </ul>

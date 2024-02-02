@@ -5,16 +5,12 @@ import { Button } from "../ui/button/button";
 import stylesFibonacci from "./fibonacci-page.module.css";
 import { Circle } from "../ui/circle/circle";
 import { stop } from "../../utils/stop";
+import { useForm } from "../../utils/useForm";
 
 export const FibonacciPage: React.FC = () => {
-  const [number, setNumber] = useState<string>();
   const [fibonacci, setFibonacci] = useState<number[]>([]);
   const [isLoader, setIsLoader] = useState<boolean>(false);
-
-  const onClick = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const num = e.target.value;
-    setNumber(num);
-  };
+  const { values, handleChange } = useForm({ input: "" });
 
   const getFibonacci = async (n: number) => {
     const arr: number[] = [0, 1];
@@ -26,26 +22,39 @@ export const FibonacciPage: React.FC = () => {
     }
   };
 
-  const onFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const getFibonacciElements = async (
+    e: React.FormEvent<HTMLButtonElement>
+  ) => {
     e.preventDefault();
     setIsLoader(true);
-    await getFibonacci(Number(number));
+    await getFibonacci(Number(values.input));
     setIsLoader(false);
   };
 
   return (
     <SolutionLayout title="Последовательность Фибоначчи">
       <main className={stylesFibonacci.main}>
-        <form className={stylesFibonacci.form} onSubmit={onFormSubmit}>
+        <form className={stylesFibonacci.form}>
           <Input
             type="number"
+            name="input"
             min={1}
             max={19}
             isLimitText
             maxLength={2}
-            onChange={onClick}
+            onChange={handleChange}
+            value={values.input}
           />
-          <Button text="Рассчитать" isLoader={isLoader} />
+          <Button
+            text="Рассчитать"
+            isLoader={isLoader}
+            onClick={getFibonacciElements}
+            disabled={
+              !values.input || values.input === "0" || values.input === "20"
+                ? true
+                : false
+            }
+          />
         </form>
         <ul className={stylesFibonacci.list}>
           {fibonacci?.map((item, index) => (

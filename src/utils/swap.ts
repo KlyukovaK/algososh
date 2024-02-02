@@ -1,8 +1,8 @@
-import { TArrString } from "../types/elements";
+import { TArr } from "../types/elements";
 
 // Изменение положения элементов
 export const swap = (
-  arr: Array<TArrString>,
+  arr: Array<TArr>,
   firstIndex: number,
   secondIndex: number
 ): void => {
