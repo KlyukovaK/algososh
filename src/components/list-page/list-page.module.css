@@ -1,0 +1,43 @@
+.main {
+  max-width: 952px;
+  width: 100%;
+  display: flex;
+  margin: 0 auto;
+  flex-direction: column;
+  align-content: center;
+  gap: 48px;
+}
+.form {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  max-width: 952px;
+  margin: 0;
+  gap: 12px;
+}
+.buttonsList {
+  display: grid;
+  grid-template-columns: 204px repeat(4, 1fr);
+  column-gap: 12px;
+}
+.buttonsIndex {
+  display: grid;
+  grid-template-columns: 204px repeat(2, 1fr);
+  column-gap: 12px;
+}
+.list {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: 100%;
+  margin: 48px auto 0;
+  text-decoration: none;
+  list-style: none;
+  padding: 0;
+}
+.circle {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
