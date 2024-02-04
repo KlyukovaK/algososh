@@ -10,27 +10,48 @@ import { ArrowIcon } from "../ui/icons/arrow-icon";
 import { LinkedList } from "./list-class";
 import { TArrList } from "../../types/elements";
 import { stop } from "../../utils/stop";
-import { nanoid } from "nanoid";
-
+type TButtons = {
+  addInHeadButton: boolean;
+  addInTailButton: boolean;
+  deleteInHeadButton: boolean;
+  deleteInTailButton: boolean;
+  addByIndexButton: boolean;
+  deleteByIndexButton: boolean;
+};
 export const ListPage: React.FC = () => {
   const newlist = new LinkedList<TArrList>();
   const [list] = useState<LinkedList<TArrList>>(newlist);
   const [elements, setElements] = useState<Array<TArrList>>([]);
-  const [isLoader, setIsLoader] = useState<boolean>(false);
   const { values, handleChange, setValues } = useForm({
     elementInput: "",
     indexInput: "",
   });
-  const [isHead, setIsHead] = useState<boolean>(false);
-  const [isTail, setIsTail] = useState<boolean>(false);
+  const initialButtons = {
+    addInHeadButton: false,
+    addInTailButton: false,
+    deleteInHeadButton: false,
+    deleteInTailButton: false,
+    addByIndexButton: false,
+    deleteByIndexButton: false,
+  };
+  const [isLoader, setIsLoader] = useState<TButtons>(initialButtons);
+  const [isDisabled, setIsDisabled] = useState<TButtons>(initialButtons);
 
-  const SmallCircle = (element: string | null | undefined) => {
+  const newElement: TArrList = {
+    element: values.elementInput,
+    head: null,
+    tail: null,
+    color: ElementStates.Modified,
+  };
+
+  const SmallCircle = (
+    element: string | null | undefined
+  ): string | React.ReactElement | null => {
     if (element) {
       return <Circle letter={element} isSmall state={ElementStates.Changing} />;
     }
     return null;
   };
-
   // Добавление новых элементов со своим цветом и ключем из массива
   const addArr = (arr: (string | null)[], element: string | null) => {
     const newArr = [];
@@ -39,17 +60,15 @@ export const ListPage: React.FC = () => {
         element: arr[i],
         color: ElementStates.Default,
         head: SmallCircle(element),
-        key: nanoid(5),
         tail: SmallCircle(element),
       });
     }
     return newArr;
   };
+
   const getElementsFromList = () => {
     const el: Array<TArrList> = [];
-    list.toArray().map((item) => {
-      el.push(item.value);
-    });
+    list.toArray().map((item) => el.push(item.value));
     setElements([...el]);
   };
   // создание исходного списка
@@ -67,124 +86,173 @@ export const ListPage: React.FC = () => {
       });
       getElementsFromList();
     }
-  }, [list.getSize()]);
+  });
+  // изменение конечного цвета
+  const changeColorDefault = (): void => {
+    for (let i = 0; i < list.getSize(); i++) {
+      list.toArray()[i].value.color = ElementStates.Default;
+      getElementsFromList();
+    }
+  };
+
+  const oldElementHead = (i: number, state: string) => {
+    elements[i] = {
+      element: elements[i].element,
+      head: SmallCircle(values.elementInput),
+      tail: null,
+      color: state === "one" ? ElementStates.Default : ElementStates.Changing,
+    };
+  };
+
+  const deleteOldElement = (i: number, state: string, head: string | null) => {
+    elements[i] = {
+      element: "",
+      head: head ? "head" : null,
+      tail: SmallCircle(String(elements[i].element)),
+      color: state === "one" ? ElementStates.Default : ElementStates.Changing,
+    };
+  };
 
   // добавление елемента в head
   const addElementHead = async () => {
-    setIsLoader(true);
-    elements[0] = {
-      element: elements[0].element,
-      head: SmallCircle(values.elementInput),
-      tail: null,
-      color: ElementStates.Default,
-    };
+    setIsLoader({ ...isLoader, addInHeadButton: true });
+    setIsDisabled({
+      addInHeadButton: false,
+      addInTailButton: true,
+      deleteInHeadButton: true,
+      deleteInTailButton: true,
+      addByIndexButton: true,
+      deleteByIndexButton: true,
+    });
+    oldElementHead(0, "one");
     await stop(500);
-    const newElement: TArrList = {
-      element: values.elementInput,
-      head: null,
-      tail: null,
-      key: nanoid(5),
-      color: ElementStates.Modified,
-    };
     list.prepend(newElement);
-    setIsHead(true);
     getElementsFromList();
     await stop(500);
-    setIsHead(false);
-    setIsLoader(false);
+    changeColorDefault();
+    setIsLoader(initialButtons);
+    setIsDisabled(initialButtons);
     setValues({ elementInput: "", indexInput: "" });
   };
   // добавление елемента в tail
   const addElementTail = async () => {
+    setIsLoader({ ...isLoader, addInTailButton: true });
+    setIsDisabled({
+      addInHeadButton: true,
+      addInTailButton: false,
+      deleteInHeadButton: true,
+      deleteInTailButton: true,
+      addByIndexButton: true,
+      deleteByIndexButton: true,
+    });
     const finalEl = elements.length - 1;
-    setIsLoader(true);
-    elements[finalEl] = {
-      element: elements[finalEl].element,
-      head: SmallCircle(values.elementInput),
-      tail: null,
-      color: ElementStates.Default,
-    };
+    oldElementHead(finalEl, "one");
     await stop(500);
-    const newElement: TArrList = {
-      element: values.elementInput,
-      head: null,
-      tail: null,
-      key: nanoid(5),
-      color: ElementStates.Modified,
-    };
     list.append(newElement);
-    setIsTail(true);
     getElementsFromList();
     await stop(500);
-    setIsTail(false);
-    setIsLoader(false);
+    changeColorDefault();
+    setIsLoader(initialButtons);
+    setIsDisabled(initialButtons);
     setValues({ elementInput: "", indexInput: "" });
   };
 
   // удаление елемента в head
   const deleteElementHead = async () => {
-    setIsLoader(true);
-    elements[0] = {
-      element: "",
-      head: "head",
-      tail: SmallCircle(String(elements[0].element)),
-      color: ElementStates.Default,
-    };
+    setIsLoader({ ...isLoader, deleteInHeadButton: true });
+    setIsDisabled({
+      addInHeadButton: true,
+      addInTailButton: true,
+      deleteInHeadButton: false,
+      deleteInTailButton: true,
+      addByIndexButton: true,
+      deleteByIndexButton: true,
+    });
+    deleteOldElement(0, "one", "head");
     await stop(500);
     list.deleteHead();
     getElementsFromList();
     await stop(500);
-    setIsLoader(false);
+    setIsLoader(initialButtons);
+    setIsDisabled(initialButtons);
   };
   // удаление елемента в tail
   const deleteElementTail = async () => {
-    setIsLoader(true);
+    setIsLoader({ ...isLoader, deleteInTailButton: true });
+    setIsDisabled({
+      addInHeadButton: true,
+      addInTailButton: true,
+      deleteInHeadButton: true,
+      deleteInTailButton: false,
+      addByIndexButton: true,
+      deleteByIndexButton: true,
+    });
     const finalEl = elements.length - 1;
-    elements[finalEl] = {
-      element: "",
-      head: null,
-      tail: SmallCircle(String(elements[finalEl].element)),
-      color: ElementStates.Default,
-    };
+    deleteOldElement(finalEl, "one", null);
     await stop(500);
     list.deleteTail();
     getElementsFromList();
     await stop(500);
-    setIsLoader(false);
+    setIsLoader(initialButtons);
+    setIsDisabled(initialButtons);
   };
+
   // добавление елемента по индексу
   const addElementByIndex = async () => {
-    setIsLoader(true);
-    for (let i = 0; i < Number(values.indexInput); i++) {
-      elements[i] = {
-        element: elements[i].element,
-        head: SmallCircle(values.elementInput),
-        tail: null,
-        color: ElementStates.Changing,
-      };
+    setIsLoader({ ...isLoader, addByIndexButton: true });
+    setIsDisabled({
+      addInHeadButton: true,
+      addInTailButton: true,
+      deleteInHeadButton: true,
+      deleteInTailButton: true,
+      addByIndexButton: false,
+      deleteByIndexButton: true,
+    });
+    for (let i = 0; i <= Number(values.indexInput); i++) {
+      oldElementHead(i, "many");
+      if (i > 0 && i - 1 === 0) {
+        elements[i - 1].head = "head";
+      } else if (i > 0) {
+        elements[i - 1].head = "";
+      }
+      setElements([...elements]);
       await stop(500);
     }
     await stop(500);
-    const newElement: TArrList = {
-      element: values.elementInput,
-      head: null,
-      tail: null,
-      color: ElementStates.Modified,
-    };
     list.addByIndex(newElement, Number(values.indexInput));
     getElementsFromList();
     await stop(500);
-    setIsLoader(false);
+    changeColorDefault();
+    setIsLoader(initialButtons);
+    setIsDisabled(initialButtons);
     setValues({ elementInput: "", indexInput: "" });
   };
 
   // удаление елемента по индексу
   const deleteByIndex = async () => {
-    setIsLoader(true);
+    setIsLoader({ ...isLoader, deleteByIndexButton: true });
+    setIsDisabled({
+      addInHeadButton: true,
+      addInTailButton: true,
+      deleteInHeadButton: true,
+      deleteInTailButton: true,
+      addByIndexButton: true,
+      deleteByIndexButton: false,
+    });
+    for (let i = 0; i <= Number(values.indexInput); i++) {
+      elements[i].color = ElementStates.Changing;
+      if (i === Number(values.indexInput)) {
+        deleteOldElement(i, "many", null);
+      }
+      setElements([...elements]);
+      await stop(500);
+    }
     list.deleteByIndex(Number(values.indexInput));
     getElementsFromList();
     await stop(500);
-    setIsLoader(false);
+    changeColorDefault();
+    setIsLoader(initialButtons);
+    setIsDisabled(initialButtons);
     setValues({ elementInput: "", indexInput: "" });
   };
 
@@ -205,24 +273,42 @@ export const ListPage: React.FC = () => {
             <Button
               text="Добавить в head"
               onClick={addElementHead}
-              isLoader={isLoader}
-              // disabled={!values.input ? true : false}
+              isLoader={isLoader.addInHeadButton}
+              disabled={
+                !values.elementInput || isDisabled.addInHeadButton
+                  ? true
+                  : false
+              }
             />
             <Button
               text="Добавить в tail"
-              isLoader={isLoader}
+              isLoader={isLoader.addInTailButton}
               onClick={addElementTail}
-              // disabled={queue.isEmpty() ? true : false}
+              disabled={
+                !values.elementInput || isDisabled.addInTailButton
+                  ? true
+                  : false
+              }
             />
             <Button
               text="Удалить из head"
               onClick={deleteElementHead}
-              // disabled={!values.input ? true : false}
+              isLoader={isLoader.deleteInHeadButton}
+              disabled={
+                list.getSize() === 0 || isDisabled.deleteInHeadButton
+                  ? true
+                  : false
+              }
             />
             <Button
               text="Удалить из tail"
               onClick={deleteElementTail}
-              // disabled={queue.isEmpty() ? true : false}
+              isLoader={isLoader.deleteInTailButton}
+              disabled={
+                list.getSize() === 0 || isDisabled.deleteInTailButton
+                  ? true
+                  : false
+              }
             />
           </div>
           <div className={styleList.buttonsIndex}>
@@ -237,12 +323,28 @@ export const ListPage: React.FC = () => {
             <Button
               text="Добавить по индексу"
               onClick={addElementByIndex}
-              // disabled={!values.input ? true : false}
+              isLoader={isLoader.addByIndexButton}
+              disabled={
+                !values.indexInput ||
+                !values.elementInput ||
+                Number(values.indexInput) > list.getSize() ||
+                isDisabled.addByIndexButton
+                  ? true
+                  : false
+              }
             />
             <Button
               text="Удалить по индексу"
               onClick={deleteByIndex}
-              // disabled={queue.isEmpty() ? true : false}
+              isLoader={isLoader.deleteByIndexButton}
+              disabled={
+                !values.indexInput ||
+                list.getSize() === 0 ||
+                Number(values.indexInput) > list.getSize() ||
+                isDisabled.deleteByIndexButton
+                  ? true
+                  : false
+              }
             />
           </div>
         </form>
@@ -252,18 +354,13 @@ export const ListPage: React.FC = () => {
               <Circle
                 letter={item.element}
                 index={i}
-                head={
-                  list.getHead()?.value.key === item.key ? "head" : item.head
-                }
+                head={item.head === null && i === 0 ? "head" : item.head}
                 tail={
-                  list.getTail()?.value.key === item.key ? " tail" : item.tail
+                  item.tail === null && i === elements.length - 1
+                    ? " tail"
+                    : item.tail
                 }
-                state={
-                  (list.getHead()?.value.key === item.key && isHead) ||
-                  (list.getTail()?.value.key === item.key && isTail)
-                    ? ElementStates.Modified
-                    : ElementStates.Default
-                }
+                state={item.color}
               />
               {i !== elements.length - 1 && <ArrowIcon />}
             </li>

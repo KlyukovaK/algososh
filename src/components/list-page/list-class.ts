@@ -33,9 +33,7 @@ export class LinkedList<T> implements ILinkedList<T> {
       const node = new Node(element);
       // добавить элемент в начало списка
       if (index === 0) {
-        node.next = this.head;
-        this.head = node;
-        this.size++;
+        this.prepend(element);
       } else {
         let curr = this.head;
         let currIndex = 0;

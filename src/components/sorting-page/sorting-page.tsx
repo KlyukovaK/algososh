@@ -108,11 +108,11 @@ export const SortingPage: React.FC = () => {
   ) => {
     e.preventDefault();
     setIsIncrease(false);
-    setIsLoader({ increasing: true, descending: false, addArr: false });
-    setIsDisabled({ increasing: false, descending: true, addArr: true });
+    setIsLoader({ ...isLoader, increasing: true });
+    setIsDisabled({ ...isDisabled, descending: true, addArr: true });
     await sort();
-    setIsDisabled({ increasing: false, descending: false, addArr: false });
-    setIsLoader({ increasing: false, descending: false, addArr: false });
+    setIsDisabled({ ...isDisabled, descending: false, addArr: false });
+    setIsLoader({ ...isLoader, increasing: false });
   };
 
   const onFormDecreaseSubmit = async (
@@ -120,11 +120,11 @@ export const SortingPage: React.FC = () => {
   ) => {
     e.preventDefault();
     setIsIncrease(true);
-    setIsDisabled({ increasing: true, descending: false, addArr: true });
-    setIsLoader({ increasing: false, descending: true, addArr: false });
+    setIsDisabled({ ...isDisabled, increasing: true, addArr: true });
+    setIsLoader({ ...isLoader, descending: true });
     await sort();
-    setIsDisabled({ increasing: false, descending: false, addArr: false });
-    setIsLoader({ increasing: false, descending: false, addArr: false });
+    setIsDisabled({ ...isDisabled, increasing: false, addArr: false });
+    setIsLoader({ ...isLoader, descending: false });
   };
   return (
     <SolutionLayout title="Сортировка массива">
@@ -154,14 +154,18 @@ export const SortingPage: React.FC = () => {
               text="По возрастанию"
               isLoader={isLoader.increasing}
               onClick={onFormIncreaseSubmit}
-              disabled={isDisabled.increasing}
+              disabled={
+                arr.length === 0 || isDisabled.increasing ? true : false
+              }
             />
             <Button
               sorting={Direction.Descending}
               text="По убыванию"
               isLoader={isLoader.descending}
               onClick={onFormDecreaseSubmit}
-              disabled={isDisabled.descending}
+              disabled={
+                arr.length === 0 || isDisabled.descending ? true : false
+              }
             />
           </div>
           <Button
