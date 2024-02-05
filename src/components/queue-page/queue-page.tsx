@@ -4,17 +4,15 @@ import { Input } from "../ui/input/input";
 import { Button } from "../ui/button/button";
 import { Circle } from "../ui/circle/circle";
 import styleQueue from "./queue-page.module.css";
-import { TArr } from "../../types/elements";
+import { TArr, THeadTaile } from "../../types/elements";
 import { stop } from "../../utils/stop";
 import { Queue } from "./queue-class";
 import { ElementStates } from "../../types/element-states";
 import { nanoid } from "nanoid";
 import { useForm } from "../../utils/useForm";
+import { SHORT_DELAY_IN_MS } from "../../constants/delays";
+import { HEAD, TAIL } from "../../constants/element-captions";
 
-type THeadTaile = {
-  head: number;
-  tail: number;
-};
 export const QueuePage: React.FC = () => {
   const [queue] = useState(new Queue<string>(7));
   const [newArr, setNewArr] = useState<Array<TArr>>([]);
@@ -46,14 +44,14 @@ export const QueuePage: React.FC = () => {
     if (queue.isEmpty()) {
       addArr(queue.getElements());
     }
-  }, [queue.isEmpty]);
+  }, [queue, queue.isEmpty]);
 
   const addElement = async () => {
     addArr(queue.getElements());
     setChangeColor({ head: false, tail: true });
     const newElement = values.input;
     queue.enqueue(newElement);
-    await stop(500);
+    await stop(SHORT_DELAY_IN_MS);
     addArr(queue.getElements());
     saetHeadTail({ head: queue.getHead(), tail: queue.getTail() });
     setChangeColor({ head: false, tail: false });
@@ -62,11 +60,11 @@ export const QueuePage: React.FC = () => {
 
   const deleteElement = async () => {
     setChangeColor({ head: true, tail: false });
-    await stop(500);
+    await stop(SHORT_DELAY_IN_MS);
     queue.dequeue();
     addArr(queue.getElements());
     saetHeadTail({ head: queue.getHead(), tail: queue.getTail() });
-    await stop(500);
+    await stop(SHORT_DELAY_IN_MS);
     setChangeColor({ head: false, tail: false });
   };
 
@@ -74,7 +72,6 @@ export const QueuePage: React.FC = () => {
     queue.clearElements();
     saetHeadTail({ head: queue.getHead(), tail: queue.getTail() });
     addArr(queue.getElements());
-    console.log(headTail.head, headTail.tail, queue.isEmpty());
   };
 
   return (
@@ -85,7 +82,7 @@ export const QueuePage: React.FC = () => {
             <Input
               type="text"
               name="input"
-              placeholder = "Введите значение"
+              placeholder="Введите значение"
               isLimitText
               maxLength={4}
               onChange={handleChange}
@@ -94,19 +91,15 @@ export const QueuePage: React.FC = () => {
             <Button
               text="Добавить"
               onClick={addElement}
-              disabled={!values.input ? true : false}
+              disabled={!values.input}
             />
             <Button
               text="Удалить"
               onClick={deleteElement}
-              disabled={queue.isEmpty() ? true : false}
+              disabled={queue.isEmpty()}
             />
           </div>
-          <Button
-            text="Очистить"
-            onClick={clean}
-            disabled={queue.isEmpty() ? true : false}
-          />
+          <Button text="Очистить" onClick={clean} disabled={queue.isEmpty()} />
         </form>
         <ul className={styleQueue.list}>
           {newArr.map((item, i) => (
@@ -114,10 +107,8 @@ export const QueuePage: React.FC = () => {
               <Circle
                 letter={item.element}
                 index={item.index}
-                head={!queue.isEmpty() && headTail.head === i ? "head" : null}
-                tail={
-                  !queue.isEmpty() && headTail.tail - 1 === i ? "tail" : null
-                }
+                head={!queue.isEmpty() && headTail.head === i ? HEAD : null}
+                tail={!queue.isEmpty() && headTail.tail - 1 === i ? TAIL : null}
                 state={
                   (isChangeColor.tail && headTail.tail === i) ||
                   (isChangeColor.head && headTail.head === i)

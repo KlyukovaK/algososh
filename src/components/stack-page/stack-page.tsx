@@ -10,6 +10,7 @@ import { ElementStates } from "../../types/element-states";
 import { nanoid } from "nanoid";
 import { stop } from "../../utils/stop";
 import { useForm } from "../../utils/useForm";
+import { SHORT_DELAY_IN_MS } from "../../constants/delays";
 
 export const StackPage: React.FC = () => {
   const newStack = new Stack<TArr>();
@@ -26,7 +27,7 @@ export const StackPage: React.FC = () => {
     };
     stack.push(newElement);
     setElements([...stack.getElements()]);
-    await stop(500);
+    await stop(SHORT_DELAY_IN_MS);
     const newElementColore: TArr = {
       element: values.input,
       key: nanoid(5),
@@ -45,7 +46,7 @@ export const StackPage: React.FC = () => {
       stack.changeColor(lastElement);
       setElements([...stack.getElements()]);
     }
-    await stop(500);
+    await stop(SHORT_DELAY_IN_MS);
     stack.pop();
     setElements([...stack.getElements()]);
   };
@@ -71,18 +72,18 @@ export const StackPage: React.FC = () => {
             <Button
               text="Добавить"
               onClick={addState}
-              disabled={!values.input ? true : false}
+              disabled={!values.input }
             />
             <Button
               text="Удалить"
               onClick={deleteElement}
-              disabled={stack.getSize()===0 ? true : false}
+              disabled={stack.getSize()===0}
             />
           </div>
           <Button
             text="Очистить"
             onClick={clean}
-            disabled={stack.getSize()===0 ? true : false}
+            disabled={stack.getSize()===0}
           />
         </form>
         <ul className={styleStack.list}>

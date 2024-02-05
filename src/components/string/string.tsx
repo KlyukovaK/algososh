@@ -10,10 +10,11 @@ import { swap } from "../../utils/swap";
 import { stop } from "../../utils/stop";
 import { useForm } from "../../utils/useForm";
 import { addArr } from "../../utils/addArr";
+import { DELAY_IN_MS } from "../../constants/delays";
 
 export const StringComponent: React.FC = () => {
   const [string, setString] = useState<Array<TArr>>([]);
-  const [isLoader, setIsLoader] = useState<boolean>(false);
+  const [isLoader, setIsLoader] = useState(false);
   const { values, handleChange } = useForm({ input: "" });
 
   useEffect(() => {
@@ -41,10 +42,10 @@ export const StringComponent: React.FC = () => {
       const endIndexElement = string.length - i - 1;
       changeColor("start", i, endIndexElement);
       setString([...string]);
-      await stop(1000); // остановка
+      await stop(DELAY_IN_MS); // остановка
       swap(string, i, endIndexElement);
       setString([...string]);
-      await stop(1000); // остановка
+      await stop(DELAY_IN_MS); // остановка
       changeColor("finish", i, endIndexElement);
       setString([...string]);
     }
@@ -72,7 +73,7 @@ export const StringComponent: React.FC = () => {
             text="Развернуть"
             isLoader={isLoader}
             onClick={reverseString}
-            disabled={!values.input ? true : false}
+            disabled={!values.input}
           />
         </form>
         <ul className={stylesString.list}>

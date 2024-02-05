@@ -2,6 +2,12 @@ interface IQueue<T> {
   enqueue: (item: T) => void;
   dequeue: () => void;
   peak: () => T | null;
+  getSize: () => number;
+  isEmpty: () => boolean;
+  getElements: () => (T | null)[];
+  clearElements: () => void;
+  getHead: () => number;
+  getTail: () => number;
 }
 
 export class Queue<T> implements IQueue<T> {
@@ -56,7 +62,7 @@ export class Queue<T> implements IQueue<T> {
     this.length = 0;
   };
 
-  getHead = () => this.head % this.size;
+  getHead = (): number => this.head % this.size;
 
-  getTail = () => this.tail % this.size;
+  getTail = (): number => this.tail % this.size;
 }

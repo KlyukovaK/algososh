@@ -21,3 +21,15 @@ export type TButton = {
   descending: boolean;
   addArr: boolean;
 };
+export type THeadTaile = {
+  head: number;
+  tail: number;
+};
+export type TButtonsList = {
+  addInHeadButton: boolean;
+  addInTailButton: boolean;
+  deleteInHeadButton: boolean;
+  deleteInTailButton: boolean;
+  addByIndexButton: boolean;
+  deleteByIndexButton: boolean;
+};

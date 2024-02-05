@@ -4,30 +4,28 @@ import { Input } from "../ui/input/input";
 import { Button } from "../ui/button/button";
 import stylesFibonacci from "./fibonacci-page.module.css";
 import { Circle } from "../ui/circle/circle";
-import { stop } from "../../utils/stop";
 import { useForm } from "../../utils/useForm";
+import { getFibonacci } from "./fibonacci.utils";
+import { stop } from "../../utils/stop";
+import { SHORT_DELAY_IN_MS } from "../../constants/delays";
 
 export const FibonacciPage: React.FC = () => {
   const [fibonacci, setFibonacci] = useState<number[]>([]);
-  const [isLoader, setIsLoader] = useState<boolean>(false);
+  const [isLoader, setIsLoader] = useState(false);
   const { values, handleChange } = useForm({ input: "" });
-
-  const getFibonacci = async (n: number) => {
-    const arr: number[] = [0, 1];
-    setFibonacci([1]);
-    for (let i = 2; i < n + 2; i++) {
-      await stop(500);
-      arr[i] = arr[i - 2] + arr[i - 1];
-      setFibonacci(arr.slice(1, n + 2));
-    }
-  };
 
   const getFibonacciElements = async (
     e: React.FormEvent<HTMLButtonElement>
   ) => {
     e.preventDefault();
     setIsLoader(true);
-    await getFibonacci(Number(values.input));
+    const arr = await getFibonacci(Number(values.input));
+    if (arr.length) {
+      for (let i = 0; i < arr.length; i++) {
+        await stop(SHORT_DELAY_IN_MS);
+        setFibonacci(arr.slice(0, i + 1));
+      }
+    }
     setIsLoader(false);
   };
 
@@ -51,8 +49,6 @@ export const FibonacciPage: React.FC = () => {
             onClick={getFibonacciElements}
             disabled={
               !values.input || values.input === "0" || values.input === "20"
-                ? true
-                : false
             }
           />
         </form>

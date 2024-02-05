@@ -9,9 +9,13 @@ export class Node<T> {
 
 interface ILinkedList<T> {
   append: (element: T) => void;
-  addByIndex: (element: T, position: number) => void;
+  prepend: (element: T) => void;
+  addByIndex: (element: T, index: number) => void;
   getSize: () => number;
   toArray: () => Node<T>[];
+  deleteHead: () => void;
+  deleteTail: () => void;
+  deleteByIndex: (index: number) => void;
 }
 
 export class LinkedList<T> implements ILinkedList<T> {
@@ -27,7 +31,6 @@ export class LinkedList<T> implements ILinkedList<T> {
 
   addByIndex(element: T, index: number) {
     if (index < 0 || index > this.size) {
-      console.log("Enter a valid index");
       return;
     } else {
       const node = new Node(element);
@@ -52,19 +55,7 @@ export class LinkedList<T> implements ILinkedList<T> {
       this.size++;
     }
   }
-  getHead() {
-    return this.head;
-  }
-  getTail() {
-    let curr = this.head;
-    this.container = [];
-    while (curr) {
-      this.container.push(curr);
-      curr = curr.next;
-    }
-    const length = this.container.length - 1;
-    return this.container[length];
-  }
+
   append(element: T) {
     const node = new Node(element);
     let current;
@@ -127,7 +118,6 @@ export class LinkedList<T> implements ILinkedList<T> {
 
   deleteByIndex(index: number) {
     if (index < 0 || index > this.size) {
-      console.log("Enter a valid index");
       return;
     } else {
       if (index === 0) {

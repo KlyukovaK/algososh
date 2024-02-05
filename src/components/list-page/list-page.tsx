@@ -8,16 +8,12 @@ import { useForm } from "../../utils/useForm";
 import { ElementStates } from "../../types/element-states";
 import { ArrowIcon } from "../ui/icons/arrow-icon";
 import { LinkedList } from "./list-class";
-import { TArrList } from "../../types/elements";
+import { TArrList, TButtonsList } from "../../types/elements";
 import { stop } from "../../utils/stop";
-type TButtons = {
-  addInHeadButton: boolean;
-  addInTailButton: boolean;
-  deleteInHeadButton: boolean;
-  deleteInTailButton: boolean;
-  addByIndexButton: boolean;
-  deleteByIndexButton: boolean;
-};
+import { initialButtons } from "../../constants/initialButtons";
+import { HEAD, TAIL } from "../../constants/element-captions";
+import { SHORT_DELAY_IN_MS } from "../../constants/delays";
+
 export const ListPage: React.FC = () => {
   const newlist = new LinkedList<TArrList>();
   const [list] = useState<LinkedList<TArrList>>(newlist);
@@ -26,16 +22,8 @@ export const ListPage: React.FC = () => {
     elementInput: "",
     indexInput: "",
   });
-  const initialButtons = {
-    addInHeadButton: false,
-    addInTailButton: false,
-    deleteInHeadButton: false,
-    deleteInTailButton: false,
-    addByIndexButton: false,
-    deleteByIndexButton: false,
-  };
-  const [isLoader, setIsLoader] = useState<TButtons>(initialButtons);
-  const [isDisabled, setIsDisabled] = useState<TButtons>(initialButtons);
+  const [isLoader, setIsLoader] = useState<TButtonsList>(initialButtons);
+  const [isDisabled, setIsDisabled] = useState<TButtonsList>(initialButtons);
 
   const newElement: TArrList = {
     element: values.elementInput,
@@ -107,7 +95,7 @@ export const ListPage: React.FC = () => {
   const deleteOldElement = (i: number, state: string, head: string | null) => {
     elements[i] = {
       element: "",
-      head: head ? "head" : null,
+      head: head ? HEAD : null,
       tail: SmallCircle(String(elements[i].element)),
       color: state === "one" ? ElementStates.Default : ElementStates.Changing,
     };
@@ -125,10 +113,10 @@ export const ListPage: React.FC = () => {
       deleteByIndexButton: true,
     });
     oldElementHead(0, "one");
-    await stop(500);
+    await stop(SHORT_DELAY_IN_MS);
     list.prepend(newElement);
     getElementsFromList();
-    await stop(500);
+    await stop(SHORT_DELAY_IN_MS);
     changeColorDefault();
     setIsLoader(initialButtons);
     setIsDisabled(initialButtons);
@@ -147,10 +135,10 @@ export const ListPage: React.FC = () => {
     });
     const finalEl = elements.length - 1;
     oldElementHead(finalEl, "one");
-    await stop(500);
+    await stop(SHORT_DELAY_IN_MS);
     list.append(newElement);
     getElementsFromList();
-    await stop(500);
+    await stop(SHORT_DELAY_IN_MS);
     changeColorDefault();
     setIsLoader(initialButtons);
     setIsDisabled(initialButtons);
@@ -169,10 +157,10 @@ export const ListPage: React.FC = () => {
       deleteByIndexButton: true,
     });
     deleteOldElement(0, "one", "head");
-    await stop(500);
+    await stop(SHORT_DELAY_IN_MS);
     list.deleteHead();
     getElementsFromList();
-    await stop(500);
+    await stop(SHORT_DELAY_IN_MS);
     setIsLoader(initialButtons);
     setIsDisabled(initialButtons);
   };
@@ -189,10 +177,10 @@ export const ListPage: React.FC = () => {
     });
     const finalEl = elements.length - 1;
     deleteOldElement(finalEl, "one", null);
-    await stop(500);
+    await stop(SHORT_DELAY_IN_MS);
     list.deleteTail();
     getElementsFromList();
-    await stop(500);
+    await stop(SHORT_DELAY_IN_MS);
     setIsLoader(initialButtons);
     setIsDisabled(initialButtons);
   };
@@ -211,17 +199,17 @@ export const ListPage: React.FC = () => {
     for (let i = 0; i <= Number(values.indexInput); i++) {
       oldElementHead(i, "many");
       if (i > 0 && i - 1 === 0) {
-        elements[i - 1].head = "head";
+        elements[i - 1].head = HEAD;
       } else if (i > 0) {
         elements[i - 1].head = "";
       }
       setElements([...elements]);
-      await stop(500);
+      await stop(SHORT_DELAY_IN_MS);
     }
-    await stop(500);
+    await stop(SHORT_DELAY_IN_MS);
     list.addByIndex(newElement, Number(values.indexInput));
     getElementsFromList();
-    await stop(500);
+    await stop(SHORT_DELAY_IN_MS);
     changeColorDefault();
     setIsLoader(initialButtons);
     setIsDisabled(initialButtons);
@@ -245,11 +233,11 @@ export const ListPage: React.FC = () => {
         deleteOldElement(i, "many", null);
       }
       setElements([...elements]);
-      await stop(500);
+      await stop(SHORT_DELAY_IN_MS);
     }
     list.deleteByIndex(Number(values.indexInput));
     getElementsFromList();
-    await stop(500);
+    await stop(SHORT_DELAY_IN_MS);
     changeColorDefault();
     setIsLoader(initialButtons);
     setIsDisabled(initialButtons);
@@ -274,41 +262,25 @@ export const ListPage: React.FC = () => {
               text="Добавить в head"
               onClick={addElementHead}
               isLoader={isLoader.addInHeadButton}
-              disabled={
-                !values.elementInput || isDisabled.addInHeadButton
-                  ? true
-                  : false
-              }
+              disabled={!values.elementInput || isDisabled.addInHeadButton}
             />
             <Button
               text="Добавить в tail"
               isLoader={isLoader.addInTailButton}
               onClick={addElementTail}
-              disabled={
-                !values.elementInput || isDisabled.addInTailButton
-                  ? true
-                  : false
-              }
+              disabled={!values.elementInput || isDisabled.addInTailButton}
             />
             <Button
               text="Удалить из head"
               onClick={deleteElementHead}
               isLoader={isLoader.deleteInHeadButton}
-              disabled={
-                list.getSize() === 0 || isDisabled.deleteInHeadButton
-                  ? true
-                  : false
-              }
+              disabled={list.getSize() === 0 || isDisabled.deleteInHeadButton}
             />
             <Button
               text="Удалить из tail"
               onClick={deleteElementTail}
               isLoader={isLoader.deleteInTailButton}
-              disabled={
-                list.getSize() === 0 || isDisabled.deleteInTailButton
-                  ? true
-                  : false
-              }
+              disabled={list.getSize() === 0 || isDisabled.deleteInTailButton}
             />
           </div>
           <div className={styleList.buttonsIndex}>
@@ -329,8 +301,6 @@ export const ListPage: React.FC = () => {
                 !values.elementInput ||
                 Number(values.indexInput) > list.getSize() ||
                 isDisabled.addByIndexButton
-                  ? true
-                  : false
               }
             />
             <Button
@@ -342,8 +312,6 @@ export const ListPage: React.FC = () => {
                 list.getSize() === 0 ||
                 Number(values.indexInput) > list.getSize() ||
                 isDisabled.deleteByIndexButton
-                  ? true
-                  : false
               }
             />
           </div>
@@ -354,10 +322,10 @@ export const ListPage: React.FC = () => {
               <Circle
                 letter={item.element}
                 index={i}
-                head={item.head === null && i === 0 ? "head" : item.head}
+                head={item.head === null && i === 0 ? HEAD : item.head}
                 tail={
                   item.tail === null && i === elements.length - 1
-                    ? " tail"
+                    ? TAIL
                     : item.tail
                 }
                 state={item.color}
