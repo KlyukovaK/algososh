@@ -1,0 +1,35 @@
+.main {
+  max-width: 829px;
+  width: 100%;
+  display: flex;
+  margin: 0 auto;
+  flex-direction: column;
+  align-content: center;
+  gap: 48px;
+}
+.form {
+  display: flex;
+  justify-content: space-between;
+  max-width: 829px;
+  margin: 0;
+}
+.addStack {
+  display: flex;
+  gap: 12px;
+  max-width: 630px;
+  width: 100%;
+}
+.list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 80px);
+  column-gap: 16px;
+  row-gap: 48px;
+  max-width: 100%;
+  margin: 48px auto 0;
+  text-decoration: none;
+  list-style: none;
+  padding: 0;
+}
+.circle {
+  text-decoration: none;
+}

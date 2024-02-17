@@ -3,7 +3,7 @@ import styles from "./column.module.css";
 import { ElementStates } from "../../../types/element-states";
 
 interface ColumnProps {
-  index: number;
+  index: number ;
   state?: ElementStates;
   extraClass?: string;
 }
