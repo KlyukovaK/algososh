@@ -1,5 +1,0 @@
-
-
-describe("String Component", () => {
-
-});

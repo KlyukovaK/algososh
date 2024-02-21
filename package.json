@@ -43,9 +43,11 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@testing-library/react": "^14.2.1",
     "@types/babel__core": "^7.20.5",
     "@types/react-router-dom": "^5.3.3",
+    "@types/react-test-renderer": "^18.0.7",
     "fetch-mock": "^9.11.0",
     "jest": "^27.5.1",
     "react-test-renderer": "^18.2.0",
