@@ -63,6 +63,7 @@ export const StringComponent: React.FC = () => {
       <main className={stylesString.main}>
         <form className={stylesString.form}>
           <Input
+            data-testid="input"
             name="input"
             maxLength={11}
             isLimitText
@@ -70,6 +71,7 @@ export const StringComponent: React.FC = () => {
             value={values.input}
           />
           <Button
+            data-testid="button-reverse"
             text="Развернуть"
             isLoader={isLoader}
             onClick={reverseString}
@@ -78,7 +80,11 @@ export const StringComponent: React.FC = () => {
         </form>
         <ul className={stylesString.list}>
           {string.map((item) => (
-            <li className={stylesString.circle} key={item.key}>
+            <li
+              data-testid="circle"
+              className={stylesString.circle}
+              key={item.key}
+            >
               <Circle letter={item.element} state={item.color} />
             </li>
           ))}

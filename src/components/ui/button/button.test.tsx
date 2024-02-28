@@ -3,12 +3,12 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { Button } from "./button";
 
 describe("Button", () => {
-  it("A button without text is rendered without errors", () => {
+  it("The button without text is rendered without errors", () => {
     const button = renderer.create(<Button text="" />).toJSON();
     expect(button).toMatchSnapshot();
   });
 
-  it("A button with text is rendered without errors", () => {
+  it("The button with text is rendered without errors", () => {
     const button = renderer.create(<Button text="Text" />).toJSON();
     expect(button).toMatchSnapshot();
   });
@@ -18,7 +18,7 @@ describe("Button", () => {
     expect(button).toMatchSnapshot();
   });
 
-  it("A button with loader is rendered without errors", () => {
+  it("The button with loader is rendered without errors", () => {
     const button = renderer.create(<Button isLoader />).toJSON();
     expect(button).toMatchSnapshot();
   });
