@@ -13,7 +13,7 @@ export type TArrList = TArr & {
 export type TArrSort = {
   element: number | string;
   color: ElementStates | undefined;
-  key: string | number | null;
+  key?: string | number | null;
   index?: number;
 };
 export type TButton = {

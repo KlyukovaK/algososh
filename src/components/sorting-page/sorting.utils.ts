@@ -62,4 +62,5 @@ export const bubbleSort = async (
   }
   arr[0].color = ElementStates.Modified;
   setNewArr([...arr]);
+  return arr
 };

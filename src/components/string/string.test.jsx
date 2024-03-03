@@ -13,7 +13,7 @@ describe("String", () => {
     //test input
     const input = screen.getByTestId("input");
     const buttonReverse = screen.getByTestId("button-reverse");
-
+    
     expect(input.value).toBe(""); // empty before
     expect(buttonReverse).toBeDisabled();
     fireEvent.change(input, { target: { value: "1234" } });

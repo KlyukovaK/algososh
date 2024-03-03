@@ -1,5 +1,5 @@
 import renderer from "react-test-renderer";
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent } from "@testing-library/react";
 import { Button } from "./button";
 
 describe("Button", () => {
@@ -25,8 +25,8 @@ describe("Button", () => {
 
   it("Checking whether the callback is called correctly when the button is clicked", () => {
     const onClick = jest.fn();
-    render(<Button text="Text" onClick={onClick}/>)
-    const button =screen.getByRole("button");
+    render(<Button text="Text" onClick={onClick} />);
+    const button = screen.getByRole("button");
     fireEvent.click(button);
     expect(onClick).toHaveBeenCalled();
   });

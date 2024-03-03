@@ -4,7 +4,7 @@ import { ElementStates } from "../../../types/element-states";
 
 describe("Circle", () => {
   it("The circle without a letter is displayed without errors", () => {
-    const circle = renderer.create(<Circle />).toJSON();
+    const circle = renderer.create(<Circle />);
     expect(circle).toMatchSnapshot();
   });
   it("The circle with a letter is displayed without errors", () => {
