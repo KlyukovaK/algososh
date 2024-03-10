@@ -1,3 +1,4 @@
+/// <reference types="cypress" />
 import { colorDefault } from "../../src/constants/constantsTest";
 
 describe("fibonacci page work correctly", function () {
@@ -16,7 +17,8 @@ describe("fibonacci page work correctly", function () {
     cy.wait(300);
     const numbers = [1, 1, 2, 3, 5, 8];
     for (let i = 0; i < 5; i++) {
-      cy.get("@circle").eq(i).should("have.css", "border", colorDefault);
+      cy.get("@circle").eq(i).should("have.css", "border-color", colorDefault);
+      cy.get('p[class*="circle_index"]').eq(i).contains(i);
       cy.get("@circle").eq(i).contains(numbers[i]);
     }
   });

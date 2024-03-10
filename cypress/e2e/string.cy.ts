@@ -19,20 +19,21 @@ describe("string page work correctly", function () {
     cy.get('[data-testid="button-reverse"]').click();
     cy.get("[class^=circle_circle]").as("circle");
     const textArr = text.split("");
+    cy.wait(500);
     for (let i: number = 0; i < Math.round(text.length / 2); i++) {
-      cy.get("@circle").eq(i).should("have.css", "border", colorChanging);
+      cy.get("@circle").eq(i).should("have.css", "border-color", colorChanging);
       cy.get("@circle")
         .eq(text.length - i - 1)
-        .should("have.css", "border", colorChanging);
+        .should("have.css", "border-color", colorChanging);
       cy.get("@circle").eq(i).contains(textArr[i]);
       cy.get("@circle")
         .eq(text.length - i - 1)
         .contains(textArr[text.length - i - 1]);
       cy.wait(300);
-      cy.get("@circle").eq(i).should("have.css", "border", colorModified);
+      cy.get("@circle").eq(i).should("have.css", "border-color", colorModified);
       cy.get("@circle")
         .eq(text.length - i - 1)
-        .should("have.css", "border", colorModified);
+        .should("have.css", "border-color", colorModified);
       cy.get("@circle")
         .eq(i)
         .contains(textArr[text.length - i - 1]);

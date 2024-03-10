@@ -72,23 +72,27 @@ export const StackPage: React.FC = () => {
             <Button
               text="Добавить"
               onClick={addState}
-              disabled={!values.input }
+              disabled={!values.input}
             />
             <Button
               text="Удалить"
               onClick={deleteElement}
-              disabled={stack.getSize()===0}
+              disabled={stack.getSize() === 0}
             />
           </div>
           <Button
             text="Очистить"
             onClick={clean}
-            disabled={stack.getSize()===0}
+            disabled={stack.getSize() === 0}
           />
         </form>
         <ul className={styleStack.list}>
           {elements.map((item) => (
-            <li className={styleStack.circle} key={item.key}>
+            <li
+              className={styleStack.circle}
+              key={item.key}
+              data-testid="circle"
+            >
               <Circle
                 letter={item.element}
                 index={item.index}

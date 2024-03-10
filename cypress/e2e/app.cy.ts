@@ -1,3 +1,4 @@
+/// <reference types="cypress" /> 
 describe("service is available", function () {
   beforeEach(function () {
     cy.viewport(1920, 1080);
