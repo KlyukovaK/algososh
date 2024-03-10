@@ -37,9 +37,11 @@ export const SortingPage: React.FC = () => {
   };
 
   useEffect(() => {
-    if (arr) {
+    if (arr.length !== 0) {
       const newArr = addArr(arr);
       setNewArr(newArr);
+    } else {
+      randomArr();
     }
   }, [arr]);
 

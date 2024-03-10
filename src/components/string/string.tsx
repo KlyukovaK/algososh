@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import { Input } from "../ui/input/input";
 import { Button } from "../ui/button/button";
@@ -51,7 +51,7 @@ export const StringComponent: React.FC = () => {
     }
   };
 
-  const reverseString = async (e: React.FormEvent<HTMLButtonElement>) => {
+  const reverseString = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoader(true);
     await reverse();
@@ -61,7 +61,7 @@ export const StringComponent: React.FC = () => {
   return (
     <SolutionLayout title="Строка">
       <main className={stylesString.main}>
-        <form className={stylesString.form}>
+        <form className={stylesString.form} onSubmit={reverseString}>
           <Input
             data-testid="input"
             name="input"
@@ -74,7 +74,7 @@ export const StringComponent: React.FC = () => {
             data-testid="button-reverse"
             text="Развернуть"
             isLoader={isLoader}
-            onClick={reverseString}
+            type="submit"
             disabled={!values.input}
           />
         </form>

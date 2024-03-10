@@ -1,9 +1,9 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { SortingPage } from "./sorting-page";
 import { bubbleSort } from "./sorting.utils";
 import { ElementStates } from "../../types/element-states";
-import { DELAY_IN_MS } from "../../constants/delays";
+import { TArrSort } from "../../types/elements";
 
 const setNewArr = jest.fn();
 describe("Sorting-page", () => {
@@ -13,12 +13,12 @@ describe("Sorting-page", () => {
         <SortingPage />
       </BrowserRouter>
     );
-    const array = screen.getByTestId("array");
-    const buttonIncreasing = screen.getByTestId("button-increasing");
-    const buttonDescending = screen.getByTestId("button-descending");
-    expect(array).toBeEmptyDOMElement(); // empty
-    expect(buttonIncreasing).toBeDisabled();
-    expect(buttonDescending).toBeDisabled();
+    const array: Array<TArrSort> = [
+      { element: "", color: ElementStates.Default },
+    ];
+    const newArray = [{ element: "", color: ElementStates.Modified }];
+    const result = await bubbleSort(array, setNewArr, true);
+    expect(result).toEqual(newArray);
   });
   it("Correctly sorts an array of one element", async () => {
     render(

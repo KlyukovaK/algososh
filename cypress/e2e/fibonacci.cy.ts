@@ -1,5 +1,5 @@
 /// <reference types="cypress" />
-import { colorDefault } from "../../src/constants/constantsTest";
+import { classCircle, colorDefault, input } from "../../src/constants/constantsTest";
 
 describe("fibonacci page work correctly", function () {
   beforeEach(function () {
@@ -7,13 +7,13 @@ describe("fibonacci page work correctly", function () {
     cy.visit("/fibonacci");
   });
   it("button is locked when the input is empty", function () {
-    cy.get('[name="input"]').clear();
+    cy.get(input).clear();
     cy.contains("Рассчитать").should("be.disabled");
   });
   it("numbers are generated correctly", function () {
-    cy.get('[name="input"]').type("5");
+    cy.get(input).type("5");
     cy.contains("Рассчитать").click();
-    cy.get("[class^=circle_circle]").as("circle");
+    cy.get(classCircle).as("circle");
     cy.wait(300);
     const numbers = [1, 1, 2, 3, 5, 8];
     for (let i = 0; i < 5; i++) {

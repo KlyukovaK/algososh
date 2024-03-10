@@ -2,10 +2,7 @@
 describe("service is available", function () {
   beforeEach(function () {
     cy.viewport(1920, 1080);
-    cy.visit("http://localhost:3000");
-  });
-  it("MainPage should open by default", function () {
-    cy.visit("/");
+    cy.visit("");
   });
   it("string page opened", function () {
     cy.get('a[href*="/recursion"]').click();

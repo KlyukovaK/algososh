@@ -21,7 +21,7 @@ export const selectionSort = async (
       arr[j].color = ElementStates.Changing;
       setNewArr([...arr]);
       await stop(SHORT_DELAY_IN_MS);
-      const comparison = isIncrease
+      const comparison = isIncrease 
         ? arr[maxInd].element < arr[j].element
         : arr[maxInd].element > arr[j].element;
       if (comparison) {

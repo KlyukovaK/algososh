@@ -1,6 +1,9 @@
+/// <reference types="cypress" />
 import {
+  classCircle,
   colorChanging,
   colorModified,
+  input,
 } from "../../src/constants/constantsTest";
 
 describe("string page work correctly", function () {
@@ -9,15 +12,15 @@ describe("string page work correctly", function () {
     cy.visit("/recursion");
   });
   it("button is locked when the input is empty", function () {
-    cy.get('[data-testid="input"]').clear();
+    cy.get(input).clear();
     cy.get('[data-testid="button-reverse"]').should("be.disabled");
   });
 
   it("the string explands correctly", function () {
     const text = "hello";
-    cy.get('[data-testid="input"]').type(text).should("have.value", text);
+    cy.get(input).type(text).should("have.value", text);
     cy.get('[data-testid="button-reverse"]').click();
-    cy.get("[class^=circle_circle]").as("circle");
+    cy.get(classCircle).as("circle");
     const textArr = text.split("");
     cy.wait(500);
     for (let i: number = 0; i < Math.round(text.length / 2); i++) {

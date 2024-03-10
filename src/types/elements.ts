@@ -33,3 +33,9 @@ export type TButtonsList = {
   addByIndexButton: boolean;
   deleteByIndexButton: boolean;
 };
+
+export type TButtonsQueue = {
+  addButton: boolean;
+  deleteButton: boolean;
+  cleanButton: boolean;
+};
