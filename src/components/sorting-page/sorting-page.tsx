@@ -25,7 +25,6 @@ export const SortingPage: React.FC = () => {
     addArr: false,
   });
   const { values, handleChange } = useForm({ radioButton: "1" });
-
   // создание исходного массива
   const randomArr = () => {
     const length = Math.random() * (17 - 3) + 3;
@@ -38,9 +37,11 @@ export const SortingPage: React.FC = () => {
   };
 
   useEffect(() => {
-    if (arr) {
+    if (arr.length !== 0) {
       const newArr = addArr(arr);
       setNewArr(newArr);
+    } else {
+      randomArr();
     }
   }, [arr]);
 
@@ -100,6 +101,7 @@ export const SortingPage: React.FC = () => {
             <Button
               sorting={Direction.Ascending}
               text="По возрастанию"
+              data-testid="button-increasing"
               isLoader={isLoader.increasing}
               onClick={onFormIncreaseSubmit}
               disabled={arr.length === 0 || isDisabled.increasing}
@@ -107,6 +109,7 @@ export const SortingPage: React.FC = () => {
             <Button
               sorting={Direction.Descending}
               text="По убыванию"
+              data-testid="button-descending"
               isLoader={isLoader.descending}
               onClick={onFormDecreaseSubmit}
               disabled={arr.length === 0 || isDisabled.descending}
@@ -118,10 +121,11 @@ export const SortingPage: React.FC = () => {
             onClick={() => {
               randomArr();
             }}
+            data-testid="button-addArr"
             disabled={isDisabled.addArr}
           />
         </form>
-        <ul className={stylesSort.list}>
+        <ul className={stylesSort.list} data-testid="array">
           {newArr.map((item) => (
             <li className={stylesSort.column} key={item.key}>
               <Column index={Number(item.element)} state={item.color} />

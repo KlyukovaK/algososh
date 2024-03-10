@@ -13,7 +13,7 @@ export type TArrList = TArr & {
 export type TArrSort = {
   element: number | string;
   color: ElementStates | undefined;
-  key: string | number | null;
+  key?: string | number | null;
   index?: number;
 };
 export type TButton = {
@@ -32,4 +32,10 @@ export type TButtonsList = {
   deleteInTailButton: boolean;
   addByIndexButton: boolean;
   deleteByIndexButton: boolean;
+};
+
+export type TButtonsQueue = {
+  addButton: boolean;
+  deleteButton: boolean;
+  cleanButton: boolean;
 };

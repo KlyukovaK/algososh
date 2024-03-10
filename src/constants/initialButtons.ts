@@ -6,3 +6,8 @@ export const initialButtons = {
   addByIndexButton: false,
   deleteByIndexButton: false,
 };
+export const initialButtonQueue = {
+  addButton: false,
+  deleteButton: false,
+  cleanButton: false,
+};

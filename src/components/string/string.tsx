@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import { Input } from "../ui/input/input";
 import { Button } from "../ui/button/button";
@@ -51,7 +51,7 @@ export const StringComponent: React.FC = () => {
     }
   };
 
-  const reverseString = async (e: React.FormEvent<HTMLButtonElement>) => {
+  const reverseString = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoader(true);
     await reverse();
@@ -61,8 +61,9 @@ export const StringComponent: React.FC = () => {
   return (
     <SolutionLayout title="Строка">
       <main className={stylesString.main}>
-        <form className={stylesString.form}>
+        <form className={stylesString.form} onSubmit={reverseString}>
           <Input
+            data-testid="input"
             name="input"
             maxLength={11}
             isLimitText
@@ -70,15 +71,20 @@ export const StringComponent: React.FC = () => {
             value={values.input}
           />
           <Button
+            data-testid="button-reverse"
             text="Развернуть"
             isLoader={isLoader}
-            onClick={reverseString}
+            type="submit"
             disabled={!values.input}
           />
         </form>
         <ul className={stylesString.list}>
           {string.map((item) => (
-            <li className={stylesString.circle} key={item.key}>
+            <li
+              data-testid="circle"
+              className={stylesString.circle}
+              key={item.key}
+            >
               <Circle letter={item.element} state={item.color} />
             </li>
           ))}

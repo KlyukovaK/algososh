@@ -14,9 +14,7 @@ export const FibonacciPage: React.FC = () => {
   const [isLoader, setIsLoader] = useState(false);
   const { values, handleChange } = useForm({ input: "" });
 
-  const getFibonacciElements = async (
-    e: React.FormEvent<HTMLButtonElement>
-  ) => {
+  const getFibonacciElements = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoader(true);
     const arr = await getFibonacci(Number(values.input));
@@ -32,7 +30,7 @@ export const FibonacciPage: React.FC = () => {
   return (
     <SolutionLayout title="Последовательность Фибоначчи">
       <main className={stylesFibonacci.main}>
-        <form className={stylesFibonacci.form}>
+        <form className={stylesFibonacci.form} onSubmit={getFibonacciElements}>
           <Input
             type="number"
             name="input"
@@ -46,9 +44,9 @@ export const FibonacciPage: React.FC = () => {
           <Button
             text="Рассчитать"
             isLoader={isLoader}
-            onClick={getFibonacciElements}
+            type="submit"
             disabled={
-              !values.input || values.input === "0" || values.input === "20"
+              !values.input || values.input === "0" || Number(values.input) > 19
             }
           />
         </form>

@@ -5,20 +5,24 @@ import { Button } from "../ui/button/button";
 import { Circle } from "../ui/circle/circle";
 import styleStack from "./stack-page.module.css";
 import { Stack } from "./stack-class";
-import { TArr } from "../../types/elements";
+import { TArr, TButtonsQueue } from "../../types/elements";
 import { ElementStates } from "../../types/element-states";
 import { nanoid } from "nanoid";
 import { stop } from "../../utils/stop";
 import { useForm } from "../../utils/useForm";
 import { SHORT_DELAY_IN_MS } from "../../constants/delays";
+import { initialButtonQueue } from "../../constants/initialButtons";
 
 export const StackPage: React.FC = () => {
   const newStack = new Stack<TArr>();
   const [stack] = useState<Stack<TArr>>(newStack);
   const [elements, setElements] = useState<Array<TArr>>([]);
   const { values, handleChange, setValues } = useForm({ input: "" });
+  const [isLoader, setIsLoader] = useState<TButtonsQueue>(initialButtonQueue);
 
-  const addState = async () => {
+  const addState = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoader({ ...isLoader, addButton: true });
     const newElement: TArr = {
       element: values.input,
       key: nanoid(5),
@@ -37,9 +41,11 @@ export const StackPage: React.FC = () => {
     stack.changeColor(newElementColore);
     setElements([...stack.getElements()]);
     setValues({ input: "" });
+    setIsLoader({ ...isLoader, addButton: false });
   };
 
   const deleteElement = async () => {
+    setIsLoader({ ...isLoader, deleteButton: true });
     const lastElement = stack.peak();
     if (lastElement) {
       lastElement.color = ElementStates.Changing;
@@ -49,17 +55,21 @@ export const StackPage: React.FC = () => {
     await stop(SHORT_DELAY_IN_MS);
     stack.pop();
     setElements([...stack.getElements()]);
+    setIsLoader({ ...isLoader, deleteButton: false });
   };
 
-  const clean = (): void => {
+  const clean = async () => {
+    setIsLoader({ ...isLoader, cleanButton: true });
+    await stop(SHORT_DELAY_IN_MS);
     stack.clearElements();
     setElements([...stack.getElements()]);
+    setIsLoader({ ...isLoader, cleanButton: false });
   };
 
   return (
     <SolutionLayout title="Стек">
       <main className={styleStack.main}>
-        <form className={styleStack.form}>
+        <form className={styleStack.form} onSubmit={addState}>
           <div className={styleStack.addStack}>
             <Input
               type="text"
@@ -71,24 +81,41 @@ export const StackPage: React.FC = () => {
             />
             <Button
               text="Добавить"
-              onClick={addState}
-              disabled={!values.input }
+              isLoader={isLoader.addButton}
+              type="submit"
+              disabled={
+                !values.input || isLoader.deleteButton || isLoader.cleanButton
+              }
             />
             <Button
               text="Удалить"
+              isLoader={isLoader.deleteButton}
               onClick={deleteElement}
-              disabled={stack.getSize()===0}
+              disabled={
+                stack.getSize() === 0 ||
+                isLoader.addButton ||
+                isLoader.cleanButton
+              }
             />
           </div>
           <Button
             text="Очистить"
             onClick={clean}
-            disabled={stack.getSize()===0}
+            isLoader={isLoader.cleanButton}
+            disabled={
+              stack.getSize() === 0 ||
+              isLoader.addButton ||
+              isLoader.deleteButton
+            }
           />
         </form>
         <ul className={styleStack.list}>
           {elements.map((item) => (
-            <li className={styleStack.circle} key={item.key}>
+            <li
+              className={styleStack.circle}
+              key={item.key}
+              data-testid="circle"
+            >
               <Circle
                 letter={item.element}
                 index={item.index}
